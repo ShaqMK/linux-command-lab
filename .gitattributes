@@ -1,0 +1,5 @@
+# Keep Linux line endings in the repo and on checkout, even on Windows.
+# A CRLF shell script fails with: /usr/bin/env: 'bash\r': No such file or directory
+* text=auto eol=lf
+*.sh text eol=lf
+*.md text eol=lf
