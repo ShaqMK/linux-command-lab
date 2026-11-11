@@ -4,7 +4,7 @@
 >
 > The Linux permission model end to end: reading `rwx` strings, numeric and symbolic `chmod`, `chown`/`chgrp`, building a group-shared directory with setgid, the special bits and `umask`.
 
-[← Users & Groups](04-users-and-groups.md) · [🏠 Home](../README.md) · [Error Log →](../reference/error-log.md)
+[← Users & Groups](04-users-and-groups.md) · [🏠 Home](../README.md) · [Scripts, Functions, Logging & Exit Codes →](06-scripts-functions-and-exit-codes.md)
 
 ---
 
@@ -232,4 +232,4 @@ umask -S       # u=rwx,g=rwx,o=rx
 
 ---
 
-[← Users & Groups](04-users-and-groups.md) · [🏠 Home](../README.md) · [Error Log →](../reference/error-log.md)
+[← Users & Groups](04-users-and-groups.md) · [🏠 Home](../README.md) · [Scripts, Functions, Logging & Exit Codes →](06-scripts-functions-and-exit-codes.md)

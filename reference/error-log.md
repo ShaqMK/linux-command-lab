@@ -23,6 +23,16 @@
 | 12 | `-bash: $1: ambiguous redirect` | Typed `2>$1` (a variable) instead of `2>&1` (a file descriptor) | `> file 2>&1` ([§10](../intermediate/02-command-anatomy-and-io.md#10-redirection)) |
 | 13 | (Silent) `tolower($4) > 25` | `tolower` returns a string, so the comparison is alphabetical | Use `$4 > 25` on numeric fields ([§12](../advanced/03-text-processing.md#12-awk-fundamentals)) |
 | 14 | (Silent) error still on screen with `2>&1 > file` | Redirections run left to right | Put `2>&1` **after** `> file` ([§10](../intermediate/02-command-anatomy-and-io.md#10-redirection)) |
+| 15 | `chmod: cannot access 'data/raw/students,csv': No such file or directory` | Typo: `,` instead of `.` in the filename | `chmod 644 data/raw/students.csv`; tab-complete paths ([§23](../advanced/06-scripts-functions-and-exit-codes.md#23-writing-and-running-a-script)) |
+| 16 | (Silent) `chmod 744` on a CSV | Gives a data file an execute bit it never needs | `644` for data/config, `755` for scripts ([§23](../advanced/06-scripts-functions-and-exit-codes.md#23-writing-and-running-a-script)) |
+| 17 | (Silent) `count_records` printed `5` instead of the row count | `awk 'END {print NF}'` counts fields on the last line (whitespace-split), not lines | `awk 'END {print NR-1}'` ([§24](../advanced/06-scripts-functions-and-exit-codes.md#24-shell-functions)) |
+| 18 | (Silent) `count_columns` printed nothing | `NF==1` matches lines with one field; every line has 4 | `awk -F',' 'NR==1 {print NF; exit}'` ([§24](../advanced/06-scripts-functions-and-exit-codes.md#24-shell-functions)) |
+| 19 | Endless `>` prompts while defining a function | Unclosed `"` (`local level=$1"`), or no `;` before `}` in a one-liner | `Ctrl+C`, then balance quotes and use `; }` ([§27](../advanced/06-scripts-functions-and-exit-codes.md#27-case-study-debugging-the-log-function)) |
+| 20 | (Silent) log shows `[INFO}` and has trailing spaces | Bracket typo `[...}`; `\ ` (backslash-space) passes a literal space to `echo` | `[$level]`; `\` must be the last character on the line ([§27](../advanced/06-scripts-functions-and-exit-codes.md#27-case-study-debugging-the-log-function)) |
+| 21 | ``local: `2026-11-11 12:39:19 [ERROR]} ': not a valid identifier`` | Missing `;` after `local message="$2"`, so `echo` and the string became arguments to `local` | `local message="$2"; echo ...` ([§27](../advanced/06-scripts-functions-and-exit-codes.md#27-case-study-debugging-the-log-function)) |
+| 22 | ``syntax error near unexpected token `newline'`` then `2026-11-11 12:41:09 []} : command not found` | Pasted terminal output including the `> ` prompts; bash read each `>` as a redirection and created empty files `echo` and `}` | Paste commands only; `rm -i -- echo '}'` ([§27](../advanced/06-scripts-functions-and-exit-codes.md#27-case-study-debugging-the-log-function)) |
+| 23 | ``syntax error near unexpected token `('`` | Pasted the `shaq@shaq:~/linux-command-lab$` prompt along with the command | Paste commands only ([§27](../advanced/06-scripts-functions-and-exit-codes.md#27-case-study-debugging-the-log-function)) |
+| 24 | (Silent) `log ERROR ...` then `echo $?` gives `0` | A pipeline's exit code is its last command's (`tee`), and the word "ERROR" is just text | `return 1` explicitly; `set -o pipefail`; `${PIPESTATUS[@]}` ([§26](../advanced/06-scripts-functions-and-exit-codes.md#26-exit-status--error-codes)) |
 
 ---
 
@@ -36,3 +46,7 @@ When a command fails or prints nothing, check these first — they cover every r
 4. **Right OS / distro?** `uname -a`, `cat /etc/os-release` (e.g. `dseditgroup` is macOS-only).
 5. **Redirection order and syntax?** `> file 2>&1`, never `2>&1 > file` or `2>$1`.
 6. **Session state stale?** Group changes need a new login (`newgrp`, log out/in).
+7. **Unexpected `>` prompt?** Bash thinks the command is unfinished (open quote, `{`, trailing `\` or `|`). Press `Ctrl+C` and retype.
+8. **Did it actually succeed?** `echo $?` right after the command (0 = success); for pipelines, `echo "${PIPESTATUS[@]}"`.
+9. **Pasted from the terminal?** Remove any `$` or `>` prompts first. They are read as part of the command.
+10. **Syntax check a script without running it:** `bash -n script.sh`

@@ -31,7 +31,7 @@ The mistakes are kept on purpose. A trailing space in a directory name, a macOS-
 
 ## Learning Path
 
-The 22 sections are split into two levels and numbered continuously (§1–§22), so a cross-reference like "see §13" always points to one place.
+The 27 sections are split into two levels and numbered continuously (§1–§27), so a cross-reference like "see §13" always points to one place.
 
 ### 🟢 Intermediate
 
@@ -47,12 +47,13 @@ The 22 sections are split into two levels and numbered continuously (§1–§22)
 | 03 | [Text Processing](advanced/03-text-processing.md) | §11–§14 | delimiters, POSIX classes, `awk` (`-F`, `NR`, `NF`, `OFS`, arrays), `sort -t -k2,2nr` |
 | 04 | [Users & Groups](advanced/04-users-and-groups.md) | §15–§16 | `groupadd`, `getent`, `usermod -aG`, `gpasswd`, `id`, `newgrp` |
 | 05 | [Permissions & Ownership](advanced/05-permissions-and-ownership.md) | §17–§22 | `chmod` (octal & symbolic), `chown`, `chgrp`, setgid shared dirs, setuid, sticky bit, `umask` |
+| 06 | [Scripts, Functions, Logging & Exit Codes](advanced/06-scripts-functions-and-exit-codes.md) | §23–§27 | shebang, `$(...)`, functions, `local`, `$1`, a `log` function with `tee -a`, `$?`, `PIPESTATUS`, `pipefail`, `return`/`exit` |
 
 ### 📚 Reference
 
 | Resource | Description |
 |---|---|
-| [Error Log & Fixes](reference/error-log.md) | 14 real errors: message, cause, fix, plus a debugging checklist |
+| [Error Log & Fixes](reference/error-log.md) | 24 real errors: message, cause, fix, plus a debugging checklist |
 | [Session Log & Roadmap](reference/session-log.md) | What was covered each day and what comes next |
 | [`rebuild-lab.sh`](reference/rebuild-lab.sh) | One script that recreates the whole practice workspace |
 
@@ -69,7 +70,8 @@ linux-command-lab/
 ├── advanced/
 │   ├── 03-text-processing.md
 │   ├── 04-users-and-groups.md
-│   └── 05-permissions-and-ownership.md
+│   ├── 05-permissions-and-ownership.md
+│   └── 06-scripts-functions-and-exit-codes.md
 ├── reference/
 │   ├── error-log.md
 │   ├── session-log.md
@@ -122,7 +124,15 @@ linux-command-lab/
 │   └── raw/{students.csv, payments.csv}
 ├── logs/application.log
 ├── reports/
-└── scripts/{analyze.sh, backup.sh}
+└── scripts/{analyze.sh, backup.sh, hello_pipeline.sh, functions.sh}
+```
+
+Load the helper functions from lesson 06 into your shell:
+
+```bash
+source scripts/functions.sh
+log INFO "students.csv has $(count_records data/raw/students.csv) records"
+# 2026-11-11 12:44:27 [INFO] students.csv has 6 records
 ```
 
 > 💡 The user/group and permission lessons (§15–§22) use `sudo` and change system state, such as creating the `dataengineers` group. Run them in a VM or on a machine you control.
@@ -141,6 +151,8 @@ A few lessons worth reading even if you skip the rest:
 | String vs number | `tolower($4) > 25` compares text alphabetically, so `"100" < "25"`. | [§12](advanced/03-text-processing.md#12-awk-fundamentals) |
 | `usermod -G` without `-a` | Replaces all supplementary groups and can remove your own `sudo` access. | [§16](advanced/04-users-and-groups.md#16-adding-users-to-groups-usermod--ag) |
 | Team directories | `chmod 2770` + setgid makes new files inherit the group automatically. | [§20](advanced/05-permissions-and-ownership.md#20-handing-a-directory-to-a-group-shared-directory) |
+| Exit codes lie in pipelines | `log ERROR ... \| tee` still returns `0`: a pipeline reports only its last command. | [§26](advanced/06-scripts-functions-and-exit-codes.md#26-exit-status--error-codes) |
+| Pasting prompts into bash | Each pasted `>` is read as a redirection and creates stray files named `echo` and `}`. | [§27](advanced/06-scripts-functions-and-exit-codes.md#27-case-study-debugging-the-log-function) |
 
 ---
 
@@ -163,6 +175,9 @@ A few lessons worth reading even if you skip the rest:
 - [x] Flags, standard streams, redirection
 - [x] `awk`, delimiters, `sort` keys
 - [x] Users, groups, permissions, ownership, `umask`
+- [x] Scripts, functions, logging, exit codes
+- [ ] Script arguments, loops & conditionals: `$#`, `"$@"`, `getopts`, `case`, `for`, `while read`
+- [ ] Error handling: `set -euo pipefail` in depth, `trap`
 - [ ] More text processing: `grep -E`, `sed`, `cut`, `uniq`, `join`
 - [ ] Finding things: `find`, `xargs`, `locate`
 - [ ] Archives & compression: `tar`, `gzip`, `zip`

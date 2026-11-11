@@ -79,7 +79,61 @@ echo "== Total payments =="
 awk -F',' 'NR > 1 { total += $3 } END { print total }' data/raw/payments.csv
 EOF
 
-chmod +x scripts/*.sh
+cat << 'EOF' > scripts/hello_pipeline.sh
+#!/usr/bin/env bash
+echo "Starting data pipeline"
+echo "Current user: $(whoami)"
+echo "Current date: $(date)"
+echo "Working directory: $(pwd)"
+echo "Pipeline completed"
+EOF
+
+# Sourced, not executed: load with `source scripts/functions.sh` (§24–§26)
+cat << 'EOF' > scripts/functions.sh
+# Reusable helpers for the lab. Load into a shell or script with:
+#   source scripts/functions.sh
+
+PIPELINE_LOG="${PIPELINE_LOG:-logs/pipeline.log}"
+
+# log LEVEL "message": timestamped line to the screen and $PIPELINE_LOG
+# ERROR lines go to stderr.
+log() {
+  local level="$1"
+  local message="$2"
+  local line
+  line="$(date '+%Y-%m-%d %H:%M:%S') [$level] $message"
+
+  if [[ "$level" == "ERROR" ]]; then
+    echo "$line" | tee -a "$PIPELINE_LOG" >&2
+  else
+    echo "$line" | tee -a "$PIPELINE_LOG"
+  fi
+}
+
+# count_records FILE: data rows, header excluded
+count_records() {
+  local file="$1"
+  awk 'END {print NR-1}' "$file"
+}
+
+# count_columns FILE: number of comma-separated columns in the header
+count_columns() {
+  local file="$1"
+  awk -F',' 'NR==1 {print NF; exit}' "$file"
+}
+
+# require_file FILE: return 1 (and log an ERROR) if FILE is missing
+require_file() {
+  local file="$1"
+  if [[ ! -f "$file" ]]; then
+    log ERROR "Missing file: $file"
+    return 1
+  fi
+}
+EOF
+
+chmod 755 scripts/analyze.sh scripts/backup.sh scripts/hello_pipeline.sh
+chmod 644 scripts/functions.sh data/raw/*.csv config/app.conf
 
 echo "Lab rebuilt in: $LAB_DIR"
 if command -v tree > /dev/null; then tree; else ls -R; fi
