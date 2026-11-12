@@ -31,7 +31,7 @@ The mistakes are kept on purpose. A trailing space in a directory name, a macOS-
 
 ## Learning Path
 
-The 27 sections are split into two levels and numbered continuously (§1–§27), so a cross-reference like "see §13" always points to one place.
+The 33 sections are split into two levels and numbered continuously (§1–§33), so a cross-reference like "see §13" always points to one place.
 
 ### 🟢 Intermediate
 
@@ -48,14 +48,16 @@ The 27 sections are split into two levels and numbered continuously (§1–§27)
 | 04 | [Users & Groups](advanced/04-users-and-groups.md) | §15–§16 | `groupadd`, `getent`, `usermod -aG`, `gpasswd`, `id`, `newgrp` |
 | 05 | [Permissions & Ownership](advanced/05-permissions-and-ownership.md) | §17–§22 | `chmod` (octal & symbolic), `chown`, `chgrp`, setgid shared dirs, setuid, sticky bit, `umask` |
 | 06 | [Scripts, Functions, Logging & Exit Codes](advanced/06-scripts-functions-and-exit-codes.md) | §23–§27 | shebang, `$(...)`, functions, `local`, `$1`, a `log` function with `tee -a`, `$?`, `PIPESTATUS`, `pipefail`, `return`/`exit` |
+| 07 | [Data Validation & ETL Pipelines](advanced/07-data-validation-and-etl-pipelines.md) | §28–§33 | `seen[key]++`, range checks, `if`/`[[ -f ]]`, `for`, awk `exit` codes, `mktemp`, `trap`, `FNR==NR`, `awk -v`, setting bad rows aside |
 
 ### 📚 Reference
 
 | Resource | Description |
 |---|---|
-| [Error Log & Fixes](reference/error-log.md) | 24 real errors: message, cause, fix, plus a debugging checklist |
+| [Error Log & Fixes](reference/error-log.md) | 37 real errors: message, cause, fix, plus a debugging checklist |
 | [Session Log & Roadmap](reference/session-log.md) | What was covered each day and what comes next |
 | [`rebuild-lab.sh`](reference/rebuild-lab.sh) | One script that recreates the whole practice workspace |
+| [`scripts/`](reference/scripts/) | The lesson 07 pipelines: `etl_pipeline.sh`, `payments_pipeline.sh`, `check_data.sh` |
 
 ---
 
@@ -71,11 +73,16 @@ linux-command-lab/
 │   ├── 03-text-processing.md
 │   ├── 04-users-and-groups.md
 │   ├── 05-permissions-and-ownership.md
-│   └── 06-scripts-functions-and-exit-codes.md
+│   ├── 06-scripts-functions-and-exit-codes.md
+│   └── 07-data-validation-and-etl-pipelines.md
 ├── reference/
 │   ├── error-log.md
 │   ├── session-log.md
-│   └── rebuild-lab.sh
+│   ├── rebuild-lab.sh
+│   └── scripts/
+│       ├── check_data.sh
+│       ├── etl_pipeline.sh
+│       └── payments_pipeline.sh
 └── LICENSE
 ```
 
@@ -152,6 +159,8 @@ A few lessons worth reading even if you skip the rest:
 | `usermod -G` without `-a` | Replaces all supplementary groups and can remove your own `sudo` access. | [§16](advanced/04-users-and-groups.md#16-adding-users-to-groups-usermod--ag) |
 | Team directories | `chmod 2770` + setgid makes new files inherit the group automatically. | [§20](advanced/05-permissions-and-ownership.md#20-handing-a-directory-to-a-group-shared-directory) |
 | Exit codes lie in pipelines | `log ERROR ... \| tee` still returns `0`: a pipeline reports only its last command. | [§26](advanced/06-scripts-functions-and-exit-codes.md#26-exit-status--error-codes) |
+| A missing field isn't an error | `$4` on a 3-column file is `""`, and `"" < 0` is true, so every row looked invalid. | [§29](advanced/07-data-validation-and-etl-pipelines.md#29-data-quality-checks-with-awk) |
+| `gsub` turns numbers into text | After trimming, `"7000" > 50000` is true; `$3 + 0` forces a numeric comparison. | [§32](advanced/07-data-validation-and-etl-pipelines.md#32-validate-and-quarantine-bad-rows) |
 | Pasting prompts into bash | Each pasted `>` is read as a redirection and creates stray files named `echo` and `}`. | [§27](advanced/06-scripts-functions-and-exit-codes.md#27-case-study-debugging-the-log-function) |
 
 ---
@@ -176,8 +185,9 @@ A few lessons worth reading even if you skip the rest:
 - [x] `awk`, delimiters, `sort` keys
 - [x] Users, groups, permissions, ownership, `umask`
 - [x] Scripts, functions, logging, exit codes
-- [ ] Script arguments, loops & conditionals: `$#`, `"$@"`, `getopts`, `case`, `for`, `while read`
-- [ ] Error handling: `set -euo pipefail` in depth, `trap`
+- [x] Conditionals, data validation, ETL pipelines
+- [ ] Script arguments & loops: `$#`, `"$@"`, `getopts`, `case`, `while read -r`
+- [ ] Error handling in depth: `trap ... ERR`, failing line numbers
 - [ ] More text processing: `grep -E`, `sed`, `cut`, `uniq`, `join`
 - [ ] Finding things: `find`, `xargs`, `locate`
 - [ ] Archives & compression: `tar`, `gzip`, `zip`

@@ -4,7 +4,7 @@
 >
 > From one-off commands to reusable shell code: writing and running a script, defining functions with arguments and `local` variables, building a timestamped `log` function with `tee`, and reading exit codes with `$?`. Ends with a step-by-step case study of six broken attempts at the `log` function.
 
-[← Permissions & Ownership](05-permissions-and-ownership.md) · [🏠 Home](../README.md) · [Error Log →](../reference/error-log.md)
+[← Permissions & Ownership](05-permissions-and-ownership.md) · [🏠 Home](../README.md) · [Data Validation & ETL Pipelines →](07-data-validation-and-etl-pipelines.md)
 
 ---
 
@@ -529,10 +529,10 @@ Bash doesn't know the `>` characters were prompts. It reads each one as an **out
 | `> }` | "create an empty file named **`}`**" | No message at all |
 | `shaq@shaq:~/linux-command-lab$ log(){` | a word, then `log(` | **`syntax error near unexpected token '('`** |
 
-> 🧹 **Side effect:** this attempt left **two empty files named `echo` and `}`** in `~/linux-command-lab`. Check and remove them:
+> 🧹 **Side effect:** these attempts left **empty files named `echo`, `local` and `}`** in `~/linux-command-lab`. They showed up in `tree` the next day. Check and remove them:
 > ```bash
-> ls -l | cat -vet      # look for "echo" and "}"
-> rm -i -- echo '}'     # -- ends options; quotes stop } being special
+> ls -l | cat -vet            # look for "echo", "local" and "}"
+> rm -i -- echo local '}'     # -- ends options; quotes stop } being special
 > ```
 
 **Fix:** copy only the commands, never the prompts. To keep a working function, save it in a file and `source` it ([§24](#24-shell-functions)), instead of copying it out of the terminal.
@@ -561,4 +561,4 @@ log(){
 
 ---
 
-[← Permissions & Ownership](05-permissions-and-ownership.md) · [🏠 Home](../README.md) · [Error Log →](../reference/error-log.md)
+[← Permissions & Ownership](05-permissions-and-ownership.md) · [🏠 Home](../README.md) · [Data Validation & ETL Pipelines →](07-data-validation-and-etl-pipelines.md)
